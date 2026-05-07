@@ -10,8 +10,8 @@ import time
 # -----------------------
 # CONFIG
 # -----------------------
-VIDEO_FOLDER = "../KonVid/k150kb"
-OUTPUT_FOLDER = "features"
+VIDEO_FOLDER = "../../KonVid/k150kb"
+OUTPUT_FOLDER = "../data/features"
 
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 

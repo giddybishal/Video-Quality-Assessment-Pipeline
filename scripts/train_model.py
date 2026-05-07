@@ -9,8 +9,8 @@ import joblib
 # -----------------------
 # LOAD DATA
 # -----------------------
-X = np.load("X.npy")
-y = np.load("y.npy")
+X = np.load("../data/X.npy")
+y = np.load("../data/y.npy")
 
 print("Dataset shape:", X.shape)
 
@@ -74,5 +74,5 @@ plt.ylabel("Predicted MOS")
 plt.title("XGBoost Predictions")
 plt.show()
 
-joblib.dump(model, "model.pkl")
-joblib.dump(scaler, "scaler.pkl")
+joblib.dump(model, "../models/model.pkl")
+joblib.dump(scaler, "../models/scaler.pkl")

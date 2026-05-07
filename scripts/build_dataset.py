@@ -2,8 +2,8 @@ import os
 import numpy as np
 import pandas as pd
 
-FEATURE_FOLDER = "features"
-CSV_PATH = "../KonVid/k150kb_scores.csv"
+FEATURE_FOLDER = "../data/features"
+CSV_PATH = "../../KonVid/k150kb_scores.csv"
 
 # Load CSV
 df = pd.read_csv(CSV_PATH)
@@ -39,5 +39,5 @@ print("X shape:", X.shape)
 print("y shape:", y.shape)
 
 # Save dataset (IMPORTANT)
-np.save("X.npy", X)
-np.save("y.npy", y)
+np.save("../data/X.npy", X)
+np.save("../data/y.npy", y)

@@ -8,8 +8,8 @@ from torchvision import transforms
 # -----------------------
 # LOAD MODEL + SCALER
 # -----------------------
-model = joblib.load("model.pkl")
-scaler = joblib.load("scaler.pkl")
+model = joblib.load("../models/model.pkl")
+scaler = joblib.load("../models/scaler.pkl")
 
 # -----------------------
 # LOAD RESNET (same as before)
