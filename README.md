@@ -1,158 +1,157 @@
-# 🎥 Video Quality Assessment Pipeline
+# 🎥 Multimodal Video Campaign Scoring System
 
 ## 📌 Overview
 
-This project implements an end-to-end machine learning pipeline that predicts video quality (MOS score) from raw video input.
+This project implements a multimodal AI pipeline for evaluating creator videos against campaign objectives.
 
-It uses pretrained deep visual features (ResNet50) combined with an XGBoost regression model and is currently being refactored into a Hexagonal Architecture for better modularity and extensibility.
+The system combines:
 
----
+- Visual Quality Assessment (VQA)
+- Semantic Campaign Matching
+- Unified Multimodal Scoring
 
-## 🧠 Current System Architecture
+to estimate how suitable a creator video is for a brand campaign.
 
-The system is structured using a **Hexagonal (Ports & Adapters) Architecture**:
-
-Video Input
-↓
-Feature Extractor (ResNet50 Adapter)
-↓
-Video Feature Vector (2048-dim)
-↓
-Quality Predictor (XGBoost Adapter)
-↓
-Predicted MOS Score
-
-
-Core logic is isolated from infrastructure concerns such as model implementation and future API exposure.
+The project is built using a Hexagonal (Ports & Adapters) Architecture for modularity and extensibility.
 
 ---
 
-## 🧠 What I Have Built So Far
+# 🧠 Features
 
-### 1. Video Feature Extraction
-- Extract frames from videos at fixed intervals
-- Use pretrained ResNet50 to extract 2048-dimensional embeddings
-- Aggregate frame-level features into a single video representation
-- Save features as `.npy` for reuse and reproducibility
+## 1. Visual Quality Assessment (VQA)
 
----
+- Extract frames from videos
+- Generate deep visual embeddings using pretrained ResNet50
+- Train XGBoost regression model on KonVid-1k dataset
+- Predict MOS (Mean Opinion Score) for unseen videos
 
-### 2. Dataset Preparation
-- Match extracted video features with MOS labels from CSV
-- Construct training dataset:
-  - `X` → 2048-dimensional video embeddings  
-  - `y` → MOS scores (human-labeled quality scores)
+### Evaluation Results
+- R² Score: ~0.50
+- Spearman Correlation: ~0.68
+- RMSE: ~0.26 MOS
 
 ---
 
-### 3. Model Training
-- Train XGBoost regression model on extracted features
-- Apply feature normalization using `StandardScaler`
-- Evaluation metrics:
-  - MSE
-  - R² Score
-  - Spearman Correlation (ranking consistency)
+## 2. Semantic Campaign Matching
+
+- Transcribe uploaded videos using Whisper
+- Encode transcript + campaign text using Sentence Transformers
+- Compute semantic similarity using cosine similarity
+- Apply lightweight keyword boosting for campaign relevance
+
+Outputs a semantic alignment score between:
+- creator video content
+- brand campaign objective
 
 ---
 
-### 4. Inference Pipeline
-- Built a local prediction pipeline for new videos
-- Input: raw video file
-- Output: predicted MOS score
+## 3. Multimodal Score Fusion
+
+Final score combines:
+- Visual quality score
+- Semantic relevance score
+
+```text
+Final Score =
+0.6 * Visual Quality +
+0.4 * Semantic Relevance
+```
+
+Final score is normalized and returned on a 0–5 scale.
 
 ---
 
-### 5. Architecture Refactor (In Progress)
-Refactored into Hexagonal Architecture:
+# 🏗 Architecture
 
-- **Ports**
-  - FeatureExtractor (video → embedding)
-  - QualityPredictor (features → score)
+The project follows a simplified Hexagonal Architecture.
 
-- **Adapters**
-  - ResNet50 feature extractor
-  - XGBoost regression model
+## Ports
+Abstract interfaces:
+- FeatureExtractor
+- QualityPredictor
+- SemanticScorer
 
-- **Service Layer**
-  - VideoScoringService orchestrates full pipeline
+## Adapters
+Concrete implementations:
+- ResNet50 feature extractor
+- XGBoost predictor
+- Whisper semantic scorer
 
-- **Entry Points**
-  - `main.py` → local testing (CLI runner)
-  - Future: FastAPI (`api.py`) for production inference
+## Services
+Business orchestration:
+- VideoScoringService
+- FinalScoringService
 
----
-
-## 📊 Current Results
-
-- R² Score: ~0.50  
-- Spearman Correlation: ~0.68  
-- RMSE: ~0.26 MOS  
-
-The model demonstrates strong ranking ability aligned with human-perceived video quality.
+## Entry Points
+- CLI testing (`main.py`)
+- FastAPI inference API (`api.py`)
 
 ---
 
-## 🚧 Challenges Faced
+# 🚀 API
 
-- Mapping video-level labels (MOS) to extracted frame features
-- Handling computational cost of video processing locally
-- Understanding and interpreting deep feature vectors (ResNet outputs)
-- Ensuring consistent preprocessing across training and inference pipelines
-- Managing pathing and modular structure during refactor
+FastAPI endpoint:
 
----
+```text
+POST /score-video
+```
 
-## 🔭 Next Steps
+### Inputs
+- Video file upload
+- Campaign text
 
-### 1. Improve Model Performance
-- Improve temporal feature aggregation (better than simple averaging)
-- Experiment with stronger encoders (CLIP / video transformers)
-- Hyperparameter tuning for XGBoost
+### Output
 
----
-
-### 2. Extend Scoring System
-- Add semantic / agenda matching layer for campaign relevance
-- Combine multiple scoring signals:
-  - Visual quality score
-  - Semantic relevance score
-  - Engagement proxy score
-- Build unified video quality scoring function
-
----
-
-### 3. API Layer (Next Implementation)
-- Add FastAPI service (`api.py`)
-- Enable video upload and real-time scoring
-- Convert pipeline into deployable ML service
+```json
+{
+  "filename": "video.mp4",
+  "campaign_text": "...",
+  "results": {
+    "vqa_score": 3.31,
+    "semantic_score": 0.83,
+    "final_score": 3.65
+  }
+}
+```
 
 ---
 
-### 4. Architecture Completion
-Continue evolving hexagonal structure:
+# 🛠 Tech Stack
 
-- Domain → scoring logic
-- Application → orchestration service
-- Ports → abstract ML interfaces
-- Adapters → ML models + API + data loaders
-
----
-
-## 🏁 Current Status
-
-✔ End-to-end ML pipeline working  
-✔ Feature extraction + regression model complete  
-✔ Hexagonal architecture introduced  
-✔ Local inference working  
-⏳ API layer pending (FastAPI integration next step)  
+- Python
+- PyTorch
+- Torchvision
+- XGBoost
+- Whisper
+- Sentence Transformers
+- FastAPI
+- Scikit-learn
 
 ---
 
-## 🚀 Goal
+# 📂 Current Capabilities
 
-Build a modular, production-ready **Video Quality Assessment System** capable of:
+✔ Video quality prediction  
+✔ Semantic campaign matching  
+✔ Multimodal score fusion  
+✔ FastAPI inference API  
+✔ Hexagonal architecture refactor  
+✔ Modular ML service design  
 
-- Predicting perceptual video quality (MOS)
-- Evaluating campaign relevance
-- Supporting scalable API-based inference
-- Extensible multi-signal scoring system
+---
+
+# 🔭 Future Improvements
+
+- Temporal-aware video models
+- Better semantic reasoning
+- Campaign-specific fine-tuning
+- Batch video processing
+- Async inference pipeline
+- Frontend dashboard
+- Cloud deployment
+
+---
+
+# 🎯 Goal
+
+Build a scalable AI system capable of evaluating creator-generated videos for brand campaign suitability using both visual and semantic intelligence.
